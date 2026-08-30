@@ -1,5 +1,7 @@
 -- Database-level Gate-0 legacy bridge assertions.
--- This script is intended to be executed after seeds 003a-003f.
+-- This script is executed after the complete seed set. Moutai corporate-action
+-- rows are allowed to graduate from workbook provenance to first-party SSE
+-- implementation announcements without changing the economic record count.
 
 do $$
 declare
@@ -24,9 +26,24 @@ begin
 
     select count(*) into actual
     from pit.corporate_actions a
+    join master.securities s using (security_id)
+    where s.security_code in ('600519.SH','0700.HK','002594.SZ','600036.SH');
+    if actual <> 28 then raise exception 'expected 28 economic corporate actions, got %', actual; end if;
+
+    select count(*) into actual
+    from pit.corporate_actions a
+    join master.securities s using (security_id)
+    join raw.documents d on d.document_id = a.source_document_id
+    where s.security_code = '600519.SH'
+      and a.metadata ->> 'record_hash_version' = 'corporate_action_v2'
+      and d.source_url like 'https://static.sse.com.cn/%';
+    if actual <> 9 then raise exception 'expected 9 official Moutai v2 corporate actions, got %', actual; end if;
+
+    select count(*) into actual
+    from pit.corporate_actions a
     join raw.documents d on d.document_id = a.source_document_id
     where d.content_hash = 'ec4cc507acfa6e73427172cc0e3011881c96e7b7727bfe7226e15ab6b5665e6e';
-    if actual <> 28 then raise exception 'expected 28 corporate actions, got %', actual; end if;
+    if actual <> 19 then raise exception 'expected 19 remaining workbook-sourced corporate actions, got %', actual; end if;
 
     select count(*) into actual
     from pit.market_bars b
@@ -38,8 +55,9 @@ begin
 
     select count(*) into actual
     from pit.corporate_actions a
-    join raw.documents d on d.document_id = a.source_document_id
-    where d.content_hash = 'ec4cc507acfa6e73427172cc0e3011881c96e7b7727bfe7226e15ab6b5665e6e'
+    join master.securities s using (security_id)
+    where s.security_code in ('600519.SH','0700.HK','002594.SZ','600036.SH')
+      and a.ex_date > date '2021-08-30'
       and a.available_at <= '2021-08-30T16:00:00+08:00'::timestamptz;
     if actual <> 0 then raise exception 'corporate-action leakage detected: % rows', actual; end if;
 end
