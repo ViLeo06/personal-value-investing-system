@@ -1,0 +1,6 @@
+-- V1.2 foundation migration applied to Supabase on 2026-08-30.
+-- Canonical full SQL is preserved in the project foundation artifact and database migration history.
+-- This repository copy will be replaced by the exact verified migration text before any fresh-environment bootstrap is supported.
+--
+-- IMPORTANT: do not use this placeholder to bootstrap a new database.
+-- Current live database schemas: master, raw, pit, fundamentals, model, backtest, audit.
