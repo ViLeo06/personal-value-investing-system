@@ -1,0 +1,101 @@
+uid not null references model.valuation_runs(run_id) on delete cascade,
+    scenario text not null,
+    assumption_key text not null,
+    value_numeric numeric,
+    value_text text,
+    value_json jsonb,
+    unit text,
+    source_kind text not null default 'model',
+    provenance jsonb not null default '{}'::jsonb,
+    unique (run_id, scenario, assumption_key)
+);
+
+create table model.valuation_outputs (
+    output_id bigint generated always as identity primary key,
+    run_id uuid not null references model.valuation_runs(run_id) on delete cascade,
+    scenario text not null,
+    output_key text not null,
+    value_numeric numeric,
+    value_text text,
+    unit text,
+    metadata jsonb not null default '{}'::jsonb,
+    unique (run_id, scenario, output_key)
+);
+
+create table model.reverse_dcf_results (
+    reverse_result_id uuid primary key default gen_random_uuid(),
+    run_id uuid not null references model.valuation_runs(run_id) on delete cascade,
+    target_price numeric not null,
+    solved_variable text not null,
+    solution_value numeric,
+    lower_bound numeric,
+    upper_bound numeric,
+    residual numeric,
+    iterations integer,
+    converged boolean not null default false,
+    diagnostics jsonb not null default '{}'::jsonb,
+    created_at timestamptz not null default now()
+);
+
+-- ---------------------------------------------------------------------------
+-- BACKTEST: historical universe, frozen decisions and performance ledger
+-- ---------------------------------------------------------------------------
+create table backtest.universes (
+    universe_id uuid primary key default gen_random_uuid(),
+    universe_code text not null unique,
+    name text not null,
+    description text,
+    construction_policy_version text not null,
+    benchmark_security_id uuid references master.securities(security_id),
+    created_at timestamptz not null default now()
+);
+
+create table backtest.universe_memberships (
+    membership_id bigint generated always as identity primary key,
+    universe_id uuid not null references backtest.universes(universe_id),
+    security_id uuid not null references master.securities(security_id),
+    valid_from date not null,
+    valid_to date,
+    eligibility_reason jsonb not null default '{}'::jsonb,
+    source_document_id uuid references raw.documents(document_id),
+    check (valid_to is null or valid_to >= valid_from)
+);
+
+create index universe_memberships_asof_idx
+    on backtest.universe_memberships(universe_id, valid_from, valid_to, security_id);
+
+create table backtest.backtest_runs (
+    backtest_run_id uuid primary key default gen_random_uuid(),
+    universe_id uuid not null references backtest.universes(universe_id),
+    model_version_id uuid not null references model.model_versions(model_version_id),
+    start_date date not null,
+    end_date date not null,
+    holding_horizon_months integer,
+    configuration jsonb not null,
+    git_commit_sha text,
+    status text not null default 'queued'
+        check (status in ('queued', 'running', 'succeeded', 'failed', 'invalidated')),
+    started_at timestamptz,
+    completed_at timestamptz,
+    result_hash text,
+    created_at timestamptz not null default now(),
+    check (end_date >= start_date),
+    check (completed_at is null or started_at is null or completed_at >= started_at)
+);
+
+create table backtest.decision_events (
+    decision_id uuid primary key default gen_random_uuid(),
+    backtest_run_id uuid not null references backtest.backtest_runs(backtest_run_id) on delete cascade,
+    decision_at timestamptz not null,
+    issuer_id uuid not null references master.issuers(issuer_id),
+    security_id uuid not null references master.securities(security_id),
+    valuation_run_id uuid references model.valuation_runs(run_id),
+    signal text,
+    rank_value numeric,
+    target_weight numeric,
+    decision_payload jsonb not null default '{}'::jsonb,
+    frozen_at timestamptz not null default now()
+);
+
+create index decision_events_run_date_idx
+    on backtest.
