@@ -1,0 +1,30 @@
+name: Market Data Probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/probe_eastmoney_moutai.py
+      - .github/workflows/market-data-probe.yml
+
+permissions:
+  contents: read
+
+jobs:
+  probe-moutai-gate0:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch and validate unadjusted target-date bars
+        run: python scripts/probe_eastmoney_moutai.py
+      - name: Upload evidence bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: moutai-gate0-eastmoney-probe
+          path: artifacts/market_probes/moutai_gate0_eastmoney.json
+          if-no-files-found: error
+          retention-days: 30
