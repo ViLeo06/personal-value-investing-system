@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from math import isfinite, sqrt
-from statistics import mean, stdev
+from statistics import stdev
 from typing import Sequence
 
 
@@ -73,7 +73,9 @@ def performance_summary(
     daily_returns: list[float] = []
     peak = ordered[0].nav
     maximum_drawdown = 0.0
-    for previous, current in zip(ordered, ordered[1:], strict=True):
+    # Adjacent slices intentionally differ in length by one.  strict=True is
+    # therefore invalid here; each pair represents one interval return.
+    for previous, current in zip(ordered, ordered[1:]):
         if previous.nav <= 0:
             raise ValueError("NAV cannot recover from zero in a simple return series")
         daily_returns.append(current.nav / previous.nav - 1.0)
