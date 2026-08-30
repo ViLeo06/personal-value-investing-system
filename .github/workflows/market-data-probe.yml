@@ -1,12 +1,10 @@
 name: Market Data Probe
 
+# External public endpoints are useful evidence sources but are not reliable CI
+# dependencies. Refresh explicitly; core branch health is covered by deterministic
+# Python and database workflows.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - scripts/probe_eastmoney_moutai.py
-      - .github/workflows/market-data-probe.yml
 
 permissions:
   contents: read
