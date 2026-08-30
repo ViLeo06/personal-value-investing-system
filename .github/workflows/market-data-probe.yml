@@ -24,7 +24,7 @@ jobs:
       - name: Upload evidence bundle
         uses: actions/upload-artifact@v4
         with:
-          name: moutai-gate0-eastmoney-probe
-          path: artifacts/market_probes/moutai_gate0_eastmoney.json
+          name: moutai-gate0-public-market-probe
+          path: artifacts/market_probes/moutai_gate0_public_market_probe.json
           if-no-files-found: error
           retention-days: 30
