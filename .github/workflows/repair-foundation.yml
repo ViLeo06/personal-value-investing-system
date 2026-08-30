@@ -1,0 +1,131 @@
+name: Repair Foundation Migration
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/repair-foundation.yml
+      - supabase/migrations/202608300001_foundation.sql
+      - supabase/migrations/202608300001_zz_foundation_tail.sql
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: foundation_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d foundation_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: foundation_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repair truncated SQL at the known table boundary
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          foundation = Path('supabase/migrations/202608300001_foundation.sql')
+          tail = Path('supabase/migrations/202608300001_zz_foundation_tail.sql')
+          original = foundation.read_text(encoding='utf-8')
+          marker = 'create table model.run_assumptions'
+          lower = original.lower()
+          index = lower.find(marker)
+
+          if index < 0:
+              required = [
+                  'create table model.run_assumptions',
+                  'create table backtest.decision_events',
+                  'create table audit.run_lineage',
+              ]
+              if all(item in lower for item in required) and original.rstrip().lower().endswith('commit;'):
+                  print('Foundation migration is already complete.')
+                  raise SystemExit(0)
+              raise SystemExit('Known truncation marker not found and migration is not complete.')
+
+          prefix = original[:index].rstrip()
+          tail_sql = tail.read_text(encoding='utf-8').strip()
+          repaired = prefix + '\n\n-- Restored canonical foundation tail.\n' + tail_sql + '\n\ncommit;\n'
+          foundation.write_text(repaired, encoding='utf-8', newline='\n')
+          print(f'Repaired {foundation}: {len(original)} -> {len(repaired)} bytes')
+          PY
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Prepare Supabase-compatible roles
+        shell: bash
+        run: |
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          begin
+            if not exists (select 1 from pg_roles where rolname='anon') then
+              create role anon nologin;
+            end if;
+            if not exists (select 1 from pg_roles where rolname='authenticated') then
+              create role authenticated nologin;
+            end if;
+            if not exists (select 1 from pg_roles where rolname='service_role') then
+              create role service_role nologin;
+            end if;
+          end $$;
+          SQL
+      - name: Verify repaired foundation as a standalone migration
+        run: psql -v ON_ERROR_STOP=1 -f supabase/migrations/202608300001_foundation.sql
+      - name: Verify required tables exist
+        shell: bash
+        run: |
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          declare
+            missing text[];
+          begin
+            select array_agg(required_name)
+            into missing
+            from unnest(array[
+              'model.run_assumptions',
+              'model.valuation_outputs',
+              'model.reverse_dcf_results',
+              'backtest.universes',
+              'backtest.universe_memberships',
+              'backtest.backtest_runs',
+              'backtest.decision_events',
+              'backtest.transactions',
+              'backtest.position_snapshots',
+              'backtest.daily_performance',
+              'audit.run_lineage'
+            ]) required_name
+            where to_regclass(required_name) is null;
+            if missing is not null then
+              raise exception 'missing foundation tables: %', missing;
+            end if;
+          end $$;
+          SQL
+      - name: Commit repaired migration when changed
+        shell: bash
+        run: |
+          if git diff --quiet -- supabase/migrations/202608300001_foundation.sql; then
+            echo 'No repair commit required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add supabase/migrations/202608300001_foundation.sql
+          git commit -m 'db: repair complete standalone foundation migration'
+          git push
