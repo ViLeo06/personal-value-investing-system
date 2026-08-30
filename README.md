@@ -21,15 +21,17 @@ Core pipeline:
 
 ## Status
 
-V1.2 foundation phase. Database contracts are being established before valuation logic is ported.
+P0 trustworthy replay foundation is in progress. Core database contracts are applied; Gate-0 company/security identities, model routing and initial free/open source registry are seeded. See `docs/PLAN.md` for the execution plan.
 
 ## Repository layout
 
 - `docs/architecture/` architecture decision records (ADRs)
-- `docs/data/` data contracts, dictionary, source policy
+- `docs/data/` data contracts, dictionary, source policy and source registry
 - `docs/research/` valuation and backtest research rules
-- `supabase/migrations/` authoritative database migrations
-- `src/value_investing/` future deterministic Python engine
+- `docs/PLAN.md` execution plan and completion gates
+- `supabase/migrations/` authoritative database schema history
+- `supabase/seeds/` idempotent reference/master-data seeds
+- `src/value_investing/` deterministic Python engine
 - `tests/` reconciliation and PIT safety tests
 - `config/` non-secret project configuration examples
 
