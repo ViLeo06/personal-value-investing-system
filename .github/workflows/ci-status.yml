@@ -1,4 +1,4 @@
-name: CI Status Tracker
+name: CI Outcome Recorder
 
 on:
   workflow_run:
@@ -9,18 +9,34 @@ permissions:
   issues: write
 
 jobs:
-  update-bootstrap-issue:
+  record-ci-outcome:
+    # Informational only. A green recorder job never replaces the actual
+    # Python-version matrix checks emitted by the upstream CI workflow.
     if: github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v7
         with:
           script: |
-            const issue_number = 1;
             const run = context.payload.workflow_run;
             const success = run.conclusion === 'success';
-            const marker = '<!-- ci-bootstrap-status -->';
-            const body = `${marker}\nLatest CI run: ${run.html_url}\nCommit: \`${run.head_sha}\`\nConclusion: **${run.conclusion}**\nUpdated: ${new Date().toISOString()}`;
+            const title = 'CI health tracker';
+            const query = `repo:${context.repo.owner}/${context.repo.repo} is:issue in:title "${title}"`;
+            const search = await github.rest.search.issuesAndPullRequests({ q: query });
+            let issue;
+            if (search.data.items.length === 0) {
+              issue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body: 'Tracks the latest upstream Python CI outcome on main. Database bootstrap and contract workflows remain separate authoritative checks.',
+              });
+            } else {
+              issue = { data: search.data.items[0] };
+            }
+            const issue_number = issue.data.number;
+            const marker = '<!-- ci-health-status -->';
+            const body = `${marker}\nLatest upstream CI run: ${run.html_url}\nCommit: \`${run.head_sha}\`\nUpstream conclusion: **${run.conclusion}**\nUpdated: ${new Date().toISOString()}\n\nThis recorder is informational; branch health is determined by the actual Python matrix checks plus the separate database workflows.`;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
