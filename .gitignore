@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local data/cache (never commit research datasets)
+data/
+cache/
+*.parquet
+*.duckdb
+*.db
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Reports / temp
+artifacts/
+reports/generated/
