@@ -6,7 +6,8 @@ Eastmoney's unauthenticated public daily K-line endpoint with fqt=0 (unadjusted)
 filters only dates required by the Gate-0 total-return ledger, and records the
 request URL plus SHA-256 hashes. The output remains secondary/derived evidence;
 it does not become an exchange-authoritative record merely because it is
-machine-readable.
+machine-readable. The single-range request also avoids unnecessary endpoint
+load and keeps the raw-response hash stable for the same upstream payload.
 """
 from __future__ import annotations
 
