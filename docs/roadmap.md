@@ -5,8 +5,8 @@
 - [x] Freeze central data-platform decision.
 - [x] Freeze PIT/bitemporal contract.
 - [x] Apply initial Supabase schema migration.
-- [ ] Register free/open data-source candidates.
-- [ ] Implement issuer/security identity mapping for four validation companies.
+- [x] Register initial free/open data-source candidates.
+- [x] Implement issuer/security identity mapping for four validation companies.
 - [ ] Load one historical decision date end-to-end with provenance.
 - [ ] Add PIT leakage tests and schema/data-quality checks.
 
