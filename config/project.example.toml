@@ -1,0 +1,13 @@
+[project]
+name = "value-investing-valuation-system"
+timezone = "Asia/Shanghai"
+base_currency = "CNY"
+data_policy = "free_open_only"
+
+[pit]
+# Historical records are eligible only if available_at <= decision_at.
+strict = true
+
+[storage]
+central = "supabase_postgres"
+analytical_cache = "duckdb_parquet"
