@@ -110,7 +110,7 @@ revoke all privileges on master.business_segments,
     pit.segment_facts,
     pit.share_class_facts,
     fundamentals.normalized_segment_facts from anon, authenticated;
-revoke all privileges on sequences
+revoke all privileges on sequence
     pit.segment_facts_segment_fact_id_seq,
     pit.share_class_facts_share_fact_id_seq,
     fundamentals.normalized_segment_facts_normalized_segment_fact_id_seq
