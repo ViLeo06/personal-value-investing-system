@@ -1,0 +1,170 @@
+name: database-bootstrap
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/**"
+      - "tests/sql/**"
+      - ".github/workflows/database-bootstrap.yml"
+  pull_request:
+    paths:
+      - "supabase/**"
+      - "tests/sql/**"
+      - ".github/workflows/database-bootstrap.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clean-room-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: valuation_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d valuation_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: valuation_test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+
+      - name: Apply migrations in lexical order
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r migration; do
+            echo "Applying ${migration}"
+            psql --set=ON_ERROR_STOP=1 --file="${migration}"
+          done < <(find supabase/migrations -maxdepth 1 -type f -name '*.sql' | LC_ALL=C sort)
+
+      - name: Apply all seeds twice to prove idempotency
+        shell: bash
+        run: |
+          set -euo pipefail
+          for pass in 1 2; do
+            echo "Seed pass ${pass}"
+            while IFS= read -r seed; do
+              echo "Applying ${seed}"
+              psql --set=ON_ERROR_STOP=1 --file="${seed}"
+            done < <(find supabase/seeds -maxdepth 1 -type f -name '*.sql' | LC_ALL=C sort)
+          done
+
+      - name: Execute SQL contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          if find tests/sql -maxdepth 1 -type f -name '*.sql' -print -quit | grep -q .; then
+            while IFS= read -r test_sql; do
+              echo "Executing ${test_sql}"
+              psql --set=ON_ERROR_STOP=1 --file="${test_sql}"
+            done < <(find tests/sql -maxdepth 1 -type f -name '*.sql' | LC_ALL=C sort)
+          fi
+
+      - name: Assert critical schemas and Gate-0 identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql --set=ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          declare
+            missing_schemas integer;
+            issuer_count integer;
+            security_count integer;
+          begin
+            select count(*) into missing_schemas
+            from (values ('master'), ('raw'), ('pit'), ('fundamentals'), ('model'), ('backtest'), ('audit')) expected(schema_name)
+            where not exists (
+              select 1 from information_schema.schemata s where s.schema_name = expected.schema_name
+            );
+            if missing_schemas <> 0 then
+              raise exception 'clean-room bootstrap is missing % required schemas', missing_schemas;
+            end if;
+
+            select count(*) into issuer_count from master.issuers
+            where issuer_code in ('KWEICHOW_MOUTAI', 'TENCENT', 'BYD', 'CMB');
+            if issuer_count <> 4 then
+              raise exception 'expected 4 Gate-0 issuers, found %', issuer_count;
+            end if;
+
+            select count(*) into security_count from master.securities
+            where security_code in ('600519.SH', '0700.HK', '002594.SZ', '1211.HK', '600036.SH', '3968.HK');
+            if security_count <> 6 then
+              raise exception 'expected 6 Gate-0 securities, found %', security_count;
+            end if;
+          end $$;
+          SQL
+
+      - name: Assert PIT leakage and run-manifest integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql --set=ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          declare
+            leaked_financial_facts integer;
+            leaked_normalized_facts integer;
+            empty_run_hashes integer;
+          begin
+            select count(*) into leaked_financial_facts
+            from model.valuation_runs vr
+            join pit.financial_facts ff on ff.issuer_id = vr.issuer_id
+            where ff.available_at > vr.as_of_at
+              and exists (
+                select 1 from audit.run_lineage rl
+                where rl.run_type = 'valuation'
+                  and rl.run_id = vr.run_id
+                  and rl.input_type = 'financial_fact'
+                  and rl.input_id = ff.fact_id::text
+              );
+            if leaked_financial_facts <> 0 then
+              raise exception 'found % future financial facts in frozen valuation lineage', leaked_financial_facts;
+            end if;
+
+            select count(*) into leaked_normalized_facts
+            from model.valuation_runs vr
+            join fundamentals.normalized_facts nf on nf.issuer_id = vr.issuer_id
+            where nf.available_at > vr.as_of_at
+              and exists (
+                select 1 from audit.run_lineage rl
+                where rl.run_type = 'valuation'
+                  and rl.run_id = vr.run_id
+                  and rl.input_type = 'normalized_fact'
+                  and rl.input_id = nf.normalized_fact_id::text
+              );
+            if leaked_normalized_facts <> 0 then
+              raise exception 'found % future normalized facts in frozen valuation lineage', leaked_normalized_facts;
+            end if;
+
+            select count(*) into empty_run_hashes
+            from model.valuation_runs
+            where status in ('completed', 'frozen')
+              and (input_hash is null or output_hash is null);
+            if empty_run_hashes <> 0 then
+              raise exception 'found % completed/frozen valuation runs without hashes', empty_run_hashes;
+            end if;
+          end $$;
+          SQL
