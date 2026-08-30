@@ -23,17 +23,22 @@ Core pipeline:
 
 The P0 engineering foundation and four-company **legacy architecture/golden-test bridge** are complete:
 
-- canonical Supabase migrations are reproducible from GitHub;
+- canonical Supabase migrations are reproducible from GitHub and include PIT financial/market data, evidence lineage, model runs, experiment locking, execution/cash ledgers, segment facts and share-class facts;
 - Moutai, Tencent, BYD and CMB issuer/security relationships are registered;
-- deterministic PIT guards, DCF/reverse-solver primitives, Owner Earnings DCF and a corporate-action total-return ledger are implemented;
+- deterministic PIT guards, Owner Earnings DCF, FCFF, residual income, bounded reverse solvers and corporate-action total-return accounting are implemented;
 - four frozen 2021 valuation decisions, 2026 outcomes and explicit lineage/data-quality records are stored in Supabase;
-- automated tests and GitHub CI verify reconciliation and leakage rules.
+- the full **140-test** Python suite passes on CPython 3.11, 3.12 and 3.13;
+- clean PostgreSQL bootstrap, double-seed idempotency and database contract workflows pass independently of the live database;
+- Supabase security advisor reports no security lints, and all previously reported unindexed foreign keys have covering indexes.
 
-The legacy bridge is **not formal strategy evidence**. It was reconstructed from a 2026 workbook, uses a hand-picked sample, lacks some executable historical assumptions and contains proxy corporate-action dates/prices. Native archival PIT Gate 0 remains in progress.
+The legacy bridge is **not formal strategy evidence**. It was reconstructed from a 2026 workbook, uses a hand-picked sample, lacks some executable historical assumptions and contains proxy corporate-action dates/prices.
+
+Native archival PIT Gate 0 is in progress. Deterministic native runs exist for Moutai and CMB, but their first-party filing archives, authoritative historical market records and corporate-action reinvestment ledgers must be completed before either run is promoted from provisional research evidence.
 
 ## Repository layout
 
 - `docs/PLAN.md` — execution plan and completion boundaries
+- `docs/ci-health.md` — authoritative CI signals and interpretation
 - `docs/architecture/` — architecture decision records
 - `docs/data/` — data contracts, source policy and documented gaps
 - `docs/research/` — valuation and backtest research rules/reports
