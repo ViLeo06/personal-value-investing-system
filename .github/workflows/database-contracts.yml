@@ -1,0 +1,102 @@
+name: Database Contracts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/**'
+      - 'tests/sql/**'
+      - '.github/workflows/database-contracts.yml'
+  pull_request:
+    paths:
+      - 'supabase/**'
+      - 'tests/sql/**'
+      - '.github/workflows/database-contracts.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  postgres-contracts:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: valuation_contracts
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d valuation_contracts"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: valuation_contracts
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Prepare Supabase-compatible roles
+        shell: bash
+        run: |
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          begin
+            if not exists (select 1 from pg_roles where rolname='anon') then create role anon nologin; end if;
+            if not exists (select 1 from pg_roles where rolname='authenticated') then create role authenticated nologin; end if;
+            if not exists (select 1 from pg_roles where rolname='service_role') then create role service_role nologin; end if;
+          end $$;
+          SQL
+      - name: Apply all migrations
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in $(find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort); do
+            echo "Applying ${file}"
+            psql -v ON_ERROR_STOP=1 -f "${file}"
+          done
+      - name: Apply all seeds twice
+        shell: bash
+        run: |
+          set -euo pipefail
+          for pass in 1 2; do
+            echo "Seed pass ${pass}"
+            for file in $(find supabase/seeds -maxdepth 1 -type f -name '*.sql' | sort); do
+              echo "Applying ${file}"
+              psql -v ON_ERROR_STOP=1 -f "${file}"
+            done
+          done
+      - name: Run SQL contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in $(find tests/sql -maxdepth 1 -type f -name '*.sql' | sort); do
+            echo "Testing ${file}"
+            psql -v ON_ERROR_STOP=1 -f "${file}"
+          done
+      - name: Verify private roles cannot use research schemas
+        shell: bash
+        run: |
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          declare
+            exposed_count integer;
+          begin
+            select count(*) into exposed_count
+            from (values
+              ('anon','master'),('anon','raw'),('anon','pit'),('anon','fundamentals'),('anon','model'),('anon','backtest'),('anon','audit'),
+              ('authenticated','master'),('authenticated','raw'),('authenticated','pit'),('authenticated','fundamentals'),('authenticated','model'),('authenticated','backtest'),('authenticated','audit')
+            ) as expected(role_name,schema_name)
+            where has_schema_privilege(role_name,schema_name,'USAGE');
+            if exposed_count <> 0 then
+              raise exception 'research schemas exposed to client roles: %', exposed_count;
+            end if;
+          end $$;
+          SQL
