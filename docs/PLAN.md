@@ -10,8 +10,11 @@ Status legend: DONE / IN PROGRESS / BLOCKED / NEXT.
 4. DONE — Internal schemas are not granted to `anon` or `authenticated`; a future application API must use a dedicated RLS-protected schema.
 5. DONE — Gate-0 issuer/security identity map covers Moutai, Tencent, BYD and CMB, including A/H relationships where applicable.
 6. DONE — Initial free-source registry covers official A/H disclosure/exchange sources and AKShare as a non-authoritative adapter.
-7. DONE — Deterministic hashing, PIT guards, DCF primitives, bounded reverse solver, Owner Earnings DCF and corporate-action total-return ledger have automated tests.
-8. DONE — GitHub CI runs the test suite on Python 3.11, 3.12 and 3.13.
+7. DONE — Deterministic hashing, PIT guards, DCF primitives, bounded reverse solver, Owner Earnings DCF, FCFF, residual income and corporate-action total-return accounting have automated tests.
+8. DONE — GitHub CI passes the full 140-test suite on Python 3.11, 3.12 and 3.13.
+9. DONE — Clean PostgreSQL bootstrap, double-seed idempotency and database contract workflows pass independently of the live Supabase project.
+10. DONE — Segment master data, PIT segment facts, share-class facts and their `as_of` version functions are present in GitHub and live Supabase.
+11. DONE — Supabase security advisor reports no security lints; foreign-key index findings are resolved. Remaining performance notices are unused-index informational messages expected at Gate-0 volume.
 
 ## Track B — legacy architecture/golden-test bridge
 
@@ -25,12 +28,13 @@ Status legend: DONE / IN PROGRESS / BLOCKED / NEXT.
 
 ## Track C — native PIT Gate 0
 
-1. IN PROGRESS — Complete Moutai's first native official-evidence snapshot, including market data and corporate actions.
-2. NEXT — Expand the standardized metric dictionary and normalization rules for the four model families.
-3. NEXT — Build complete, explicit assumptions for Moutai, Tencent, BYD and CMB rather than relying on legacy frozen outputs.
-4. NEXT — Create three historical decision snapshots per company from contemporaneous official/free evidence.
-5. NEXT — Reconcile each run against V1.1/legacy outputs where comparable and preserve documented differences.
-6. NEXT — Freeze Phase A, reveal Phase B only after maturity, and generate reproducible attribution.
+1. IN PROGRESS — Complete Moutai's first native official-evidence snapshot, including authoritative market data, archived filing bytes and corporate actions.
+2. IN PROGRESS — CMB's native residual-income replay and deterministic tests exist; complete first-party evidence archiving and market/corporate-action reconciliation.
+3. NEXT — Implement native Tencent platform FCFF/SOTP and BYD value-driver FCFF runs from contemporaneous evidence.
+4. NEXT — Expand the standardized metric dictionary and normalization rules for all four model families.
+5. NEXT — Create three historical decision snapshots per company from contemporaneous official/free evidence.
+6. NEXT — Reconcile each run against V1.1/legacy outputs where comparable and preserve documented differences.
+7. NEXT — Freeze Phase A, reveal Phase B only after maturity, and generate reproducible attribution.
 
 ## Later gates
 
