@@ -31,8 +31,12 @@ def test_native_tencent_run_is_deterministic_and_not_tuned_to_legacy():
     )
     assert run.decision.signal == "avoid_at_price"
     assert run.native_minus_legacy_base_hkd < 0
-    assert len(run.input_hash) == 64
-    assert len(run.output_hash) == 64
+    assert run.input_hash == (
+        "6542c90b1b727c716e2b55d67712389494fa3e491a74fbb12382f9a1c61614a9"
+    )
+    assert run.output_hash == (
+        "6fc2985221cc01fe38a51ceda7b75ee414d6a578e40274c14f290069d535c799"
+    )
 
 
 def test_no_tencent_scenario_reaches_hurdle_at_2021_price():
