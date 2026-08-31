@@ -1,0 +1,29 @@
+{
+  "cells": [
+    {
+      "key": "case.base_intrinsic_value_per_share",
+      "sheet": "REPLACE_WITH_CASE_SHEET",
+      "cell": "REPLACE_WITH_CELL",
+      "unit": "currency/share"
+    },
+    {
+      "key": "case.reverse_dcf_implied_growth",
+      "sheet": "REPLACE_WITH_REVERSE_DCF_SHEET",
+      "cell": "REPLACE_WITH_CELL",
+      "unit": "ratio"
+    },
+    {
+      "key": "case.five_year_expected_irr",
+      "sheet": "REPLACE_WITH_CASE_SHEET",
+      "cell": "REPLACE_WITH_CELL",
+      "unit": "ratio"
+    },
+    {
+      "key": "case.target_entry_price_15pct",
+      "sheet": "REPLACE_WITH_CASE_SHEET",
+      "cell": "REPLACE_WITH_CELL",
+      "unit": "currency/share"
+    }
+  ],
+  "instructions": "Copy this file for each V1.1 workbook after the exact frozen output cells are reviewed. Do not guess cell addresses."
+}
