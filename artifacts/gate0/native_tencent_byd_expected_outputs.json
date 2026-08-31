@@ -1,0 +1,62 @@
+{
+  "policy_versions": {
+    "tencent": "platform_fcff_sotp_policy_v1",
+    "byd": "manufacturing_value_driver_policy_v1"
+  },
+  "tencent": {
+    "decision_at": "2021-08-30T16:00:00+08:00",
+    "market_price_hkd": 465.8,
+    "scenarios": {
+      "pessimistic": {
+        "intrinsic_value_per_share_hkd": 247.17034956510244,
+        "year_five_value_per_share_hkd": 265.5920132089466,
+        "five_year_irr": -0.1062766487573672,
+        "target_buy_price_15pct": 132.04617004852435
+      },
+      "base": {
+        "intrinsic_value_per_share_hkd": 377.8300927535669,
+        "year_five_value_per_share_hkd": 447.3281521175405,
+        "five_year_irr": -0.008060123817144271,
+        "target_buy_price_15pct": 222.4011502768156
+      },
+      "optimistic": {
+        "intrinsic_value_per_share_hkd": 560.0272811360829,
+        "year_five_value_per_share_hkd": 695.172816634515,
+        "five_year_irr": 0.0833746255576564,
+        "target_buy_price_15pct": 345.6237514424649
+      }
+    },
+    "reverse_growth_multiplier": 1.5524930390984082,
+    "reverse_implied_first_year_growth": 0.20182409508279307,
+    "decision_signal": "avoid_at_price"
+  },
+  "byd": {
+    "decision_at": "2021-08-30T15:00:00+08:00",
+    "market_price_cny": 281.97,
+    "scenarios": {
+      "pessimistic": {
+        "intrinsic_value_per_share_cny": -2.0041760547668135,
+        "year_five_value_per_share_cny": 4.390679690640914,
+        "five_year_irr": -0.5650235242252479,
+        "target_buy_price_15pct": 2.182943794333355
+      },
+      "base": {
+        "intrinsic_value_per_share_cny": 25.95616662450093,
+        "year_five_value_per_share_cny": 77.741027708341,
+        "five_year_irr": -0.2271602085438662,
+        "target_buy_price_15pct": 38.65103035476687,
+        "pv_explicit_fcff": -23.98802885269323,
+        "terminal_value_share": 1.2342227837056974
+      },
+      "optimistic": {
+        "intrinsic_value_per_share_cny": 111.98746246951156,
+        "year_five_value_per_share_cny": 219.3102275190355,
+        "five_year_irr": -0.04902040988935463,
+        "target_buy_price_15pct": 109.03594293543924
+      }
+    },
+    "reverse_growth_multiplier": 3.183028538214785,
+    "reverse_implied_first_year_growth": 0.9549085614644355,
+    "decision_signal": "avoid_at_price"
+  }
+}
