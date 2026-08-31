@@ -1,0 +1,27 @@
+{
+  "issuer_code": "KWEICHOW_MOUTAI",
+  "security_code": "600519.SH",
+  "decision_cutoff": "2021-04-01T00:00:00+08:00",
+  "source_document": "2020 annual report",
+  "source_available_at": "2021-03-31T00:00:00+08:00",
+  "facts": {
+    "revenue": 94915380916.72,
+    "net_income_parent": 46697285429.81,
+    "operating_cash_flow": 51669068693.03,
+    "total_assets": 213395810527.46,
+    "equity_parent": 161322735087.56,
+    "basic_eps": 37.17
+  },
+  "missing_for_owner_earnings_dcf": [
+    "depreciation_amortization",
+    "other_non_cash_adjustments",
+    "maintenance_capex",
+    "change_working_capital",
+    "shares_outstanding",
+    "net_cash",
+    "decision_price",
+    "corporate_actions"
+  ],
+  "status": "blocked_data",
+  "note": "This fixture is a PIT evidence prototype, not an investment recommendation or completed valuation."
+}
