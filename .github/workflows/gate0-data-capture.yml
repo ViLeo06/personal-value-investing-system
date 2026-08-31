@@ -1,0 +1,32 @@
+name: Gate 0 evidence capture
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/fetch_gate0_moutai.py'
+      - '.github/workflows/gate0-data-capture.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Capture raw and normalized evidence
+        run: python scripts/fetch_gate0_moutai.py
+      - name: Commit evidence package
+        run: |
+          if git diff --quiet -- data/raw/gate0/moutai/2021-04-01; then
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/raw/gate0/moutai/2021-04-01
+          git commit -m 'data: refresh Moutai Gate 0 evidence [skip ci]'
+          git push
