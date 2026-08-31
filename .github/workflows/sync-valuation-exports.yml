@@ -1,0 +1,29 @@
+name: Sync valuation compatibility exports
+
+on:
+  push:
+    paths:
+      - 'src/value_investing/valuation/_exports.py'
+      - '.github/workflows/sync-valuation-exports.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync package exports
+        run: cp src/value_investing/valuation/_exports.py src/value_investing/valuation/__init__.py
+      - name: Commit compatibility layer
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/value_investing/valuation/__init__.py
+          git commit -m 'fix: synchronize valuation compatibility exports'
+          git push
