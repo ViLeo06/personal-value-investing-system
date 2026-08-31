@@ -1,0 +1,28 @@
+name: Excel Golden Test tooling
+
+on:
+  push:
+    paths:
+      - 'scripts/extract_excel_golden.py'
+      - 'src/value_investing/golden.py'
+      - 'tests/test_excel_golden.py'
+      - 'requirements-excel-golden.txt'
+      - '.github/workflows/excel-golden-ci.yml'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  golden-tooling:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-excel-golden.txt
+      - run: python -m pip install -r requirements-excel-golden.txt
+      - run: PYTHONPATH=src pytest -q tests/test_excel_golden.py
