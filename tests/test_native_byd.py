@@ -30,8 +30,12 @@ def test_native_byd_run_is_deterministic_and_not_tuned_to_legacy():
     )
     assert run.decision.signal == "avoid_at_price"
     assert run.native_minus_legacy_base_cny > 0
-    assert len(run.input_hash) == 64
-    assert len(run.output_hash) == 64
+    assert run.input_hash == (
+        "d82e5d87e44d5b7be0f77cedb560f4291d27d29e632e7505e76ec01034876114"
+    )
+    assert run.output_hash == (
+        "4d8cdea5db2e0c872aec2c738d3b94cda45ea1d962760d334ef0d15db8baff30"
+    )
 
 
 def test_byd_high_growth_case_exposes_reinvestment_burden():
