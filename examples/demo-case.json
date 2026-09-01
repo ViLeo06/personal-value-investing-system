@@ -1,0 +1,26 @@
+{
+  "case_name": "虚构示例公司",
+  "entry_price": 100.0,
+  "target_rate": 0.15,
+  "scenarios": [
+    {
+      "name": "悲观",
+      "probability": 0.25,
+      "annual_distributions": [1.0, 1.0, 1.0, 1.0, 1.0],
+      "exit_value": 90.0
+    },
+    {
+      "name": "基准",
+      "probability": 0.5,
+      "annual_distributions": [1.0, 1.2, 1.4, 1.6, 1.8],
+      "exit_value": 160.0
+    },
+    {
+      "name": "乐观",
+      "probability": 0.25,
+      "annual_distributions": [1.0, 1.5, 2.0, 2.5, 3.0],
+      "exit_value": 230.0
+    }
+  ]
+}
+
