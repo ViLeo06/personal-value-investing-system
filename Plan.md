@@ -9,10 +9,10 @@
 - `ownership`：Codex 执行；授权来自用户“理解都对，请开始执行”。
 - `status_authority_ref`：`Plan.md`
 - `artifact_refs`：`README.md`、`AGENTS.md`、`PRD.md`、`docs/`、`templates/`、`src/`、`tests/`
-- `evidence_refs`：本地测试、Git 提交、GitHub 默认分支与归档分支回读；完成后补充具体结果。
-- `delivery_closure`：目标为用户私有 GitHub 对应仓库；覆盖前必须建立归档引用，完成后回读仓库名、默认分支和提交。
-- `gbrain_closure`：待本轮完成后收口。
-- `verified_at`：2026-09-02（亚洲／上海）；已核对置顶聊天、现有投资项目、旧本地仓库和远端目标，后续证据逐项更新。
+- `evidence_refs`：本地十项测试通过；虚构示例运行成功；GitHub 新主线持续集成通过；默认分支和归档分支提交已分别回读。
+- `delivery_closure`：已交付到私有 GitHub 仓库 `personal-value-investing-system`；默认分支为 `main`，归档分支为 `archive/pre-rebuild-2026-09-02`，两者均已回读。
+- `gbrain_closure`：已写入 `projects/investment/personal-value-investing-system-rebuild-20260902`，并更新 `projects/investment/readme`；旧 V1 已建立 `superseded_by` 关系。
+- `verified_at`：2026-09-02（亚洲／上海）；置顶聊天读取、本地测试、Git 提交、GitHub 分支与持续集成、GBrain 页面均已逐项核对。
 
 模式：授权修改与外部仓库交付。  
 目标：建立全新的个人价值投资系统项目，迁入置顶聊天信息，形成可运行基础并覆盖 GitHub 旧项目。  
@@ -23,7 +23,7 @@
 
 ## 当前阶段
 
-阶段 1：重建底座与 GitHub 切换，进行中。
+阶段 1：重建底座与 GitHub 切换，已完成。下一阶段为普通非金融企业研究闭环。
 
 ## 本轮清单
 
@@ -36,8 +36,8 @@
 - [x] 运行全部本地测试与示例验证：十项测试通过，虚构示例命令运行成功。
 - [x] 更新父级投资项目入口和状态；原文件已做哈希一致备份。
 - [x] 创建远端归档分支 `archive/pre-rebuild-2026-09-02`，回读为覆盖前提交 `94a08c33062ec30be612ddf8b3bc7a6e13ae8fac`；仓库已改为新英文名。
-- [ ] 初始化新 Git 历史、推送并回读默认分支。
-- [ ] 完成 GBrain 写回与最终证据收口。
+- [x] 初始化新 Git 历史、用带租约方式覆盖并回读默认分支；新主线持续集成通过。
+- [x] 完成 GBrain 写回与回读，并建立旧 V1 到新主线的替代关系。
 
 ## 后续路线
 
@@ -72,4 +72,4 @@
 
 ## 下一步
 
-执行 GitHub 归档、改名、带租约覆盖和回读，然后完成 GBrain 与最终证据收口。
+进入阶段 2：先定义官方证据人工导入格式，再实现普通非金融企业的财务标准化、三阶段企业自由现金流估值和反向估值。
