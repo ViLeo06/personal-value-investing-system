@@ -9,10 +9,10 @@
 - `ownership`：Codex 执行；授权来自用户“理解都对，请开始执行”。
 - `status_authority_ref`：`Plan.md`
 - `artifact_refs`：`README.md`、`AGENTS.md`、`PRD.md`、`docs/`、`templates/`、`src/`、`tests/`、`docs/project-overview-2026-09-02.html`
-- `evidence_refs`：本地二十一项测试通过；V1.1 四模型与历史复演 V1.0 冻结回归通过；虚构示例运行成功；既有 GitHub 新主线持续集成通过；默认分支和归档分支提交已分别回读。
-- `delivery_closure`：已交付到私有 GitHub 仓库 `personal-value-investing-system`；默认分支为 `main`，归档分支为 `archive/pre-rebuild-2026-09-02`，两者均已回读。飞书项目群 `Codex｜个人价值投资系统` 已创建、绑定、置顶并回读；项目介绍 HTML 已发送到该群，附件名与完成说明已回读。
-- `gbrain_closure`：已写入并回读 `projects/investment/personal-value-investing-system-rebuild-20260902`，更新 `projects/investment/readme`，旧 V1 已建立 `superseded_by` 关系；模型建立与回归测试的新状态及本地未推送边界已更新到同一主线页。
-- `verified_at`：2026-09-02（亚洲／上海）；置顶聊天读取、本地十项测试与虚构示例、Git 提交、GitHub 分支与持续集成、GBrain 页面、飞书群绑定、桥重载、项目介绍 HTML 的桌面与手机浏览器渲染、附件发送和群端回读均已逐项核对。
+- `evidence_refs`：本地二十一项测试通过；V1.1 四模型与历史复演 V1.0 冻结回归通过；虚构示例运行成功；既有 GitHub 新主线持续集成通过；默认分支、原归档分支和本轮备份分支提交已分别回读。
+- `delivery_closure`：已交付到私有 GitHub 仓库 `personal-value-investing-system`；默认分支为 `main`，归档分支为 `archive/pre-rebuild-2026-09-02`，本轮备份分支为 `backup/model-regression-baseline-2026-09-02`，均已回读。飞书项目群 `Codex｜个人价值投资系统` 已创建、绑定、置顶并回读；项目介绍 HTML 已发送到该群，附件名与完成说明已回读。
+- `gbrain_closure`：已写入并回读 `projects/investment/personal-value-investing-system-rebuild-20260902`，更新 `projects/investment/readme`，旧 V1 已建立 `superseded_by` 关系；模型建立与回归测试的新状态及本地未推送边界已更新到同一主线页。本轮 GitHub 备份事实待写回，原因是官方 GBrain MCP 工具未暴露，未绕过接口直接写库。
+- `verified_at`：2026-09-02（亚洲／上海）；置顶聊天读取、本地二十一项测试、冻结回归与虚构示例、Git 提交、GitHub 默认分支、原归档分支与本轮备份分支、持续集成、既有 GBrain 页面、飞书群绑定、桥重载、项目介绍 HTML 的桌面与手机浏览器渲染、附件发送和群端回读均已逐项核对。
 
 模式：授权修改与外部仓库交付。  
 目标：建立全新的个人价值投资系统项目，并按用户最新确认保持在“模型建立与回归测试”状态。
@@ -33,7 +33,16 @@
 - 已实现五年预期收益、目标价格、反向增长求解、A 区冻结与篡改检测、分红再投资、拆并股、B 区误差和基准归因。
 - 已建立 `examples/regression/` 数值夹具和统一回归命令；本地二十一项自动化测试全部通过。
 - 四家公司只作为模型调试和防漂移样本，不是独立盲测，不代表当前估值或投资结论。
-- 本轮仅完成本地工作树对齐，尚未提交或推送；原有 `Plan.md` 项目介绍记录与未跟踪 HTML 原件均已保留。
+- 原先仅完成本地工作树对齐；现已在 `backup/model-regression-baseline-2026-09-02` 完整提交并推送，未改动远端 `main`，原有 `Plan.md` 项目介绍记录与 HTML 原件均已保留。
+
+## GitHub 当前状态备份
+
+- 2026-09-02 用户授权将回退后的当前状态上传 GitHub 备份；采用新分支保存，不覆盖默认分支。
+- 备份分支：`backup/model-regression-baseline-2026-09-02`。
+- 模型、回归、文档与项目介绍的原子快照提交：`f713e02cf84b67877c2510263901a222cfc6d2cd`。
+- 推送前二十一项自动化测试、冻结回归和虚构示例均通过；敏感路径、敏感内容与异常大文件检查无命中。
+- 远端备份分支已回读为上述快照提交；远端 `main` 仍保持 `461a0a8fd522c43b2a250d839087cd6f4346958e`，原归档分支仍保持 `94a08c33062ec30be612ddf8b3bc7a6e13ae8fac`。
+- GBrain：待写回（本轮官方 GBrain MCP 工具未暴露；未绕过接口直接写库）。
 
 ## 项目介绍 HTML 交付
 
