@@ -10,9 +10,9 @@
 - `status_authority_ref`：`Plan.md`
 - `artifact_refs`：`README.md`、`AGENTS.md`、`PRD.md`、`docs/`、`templates/`、`src/`、`tests/`
 - `evidence_refs`：本地十项测试通过；虚构示例运行成功；GitHub 新主线持续集成通过；默认分支和归档分支提交已分别回读。
-- `delivery_closure`：已交付到私有 GitHub 仓库 `personal-value-investing-system`；默认分支为 `main`，归档分支为 `archive/pre-rebuild-2026-09-02`，两者均已回读。
+- `delivery_closure`：已交付到私有 GitHub 仓库 `personal-value-investing-system`；默认分支为 `main`，归档分支为 `archive/pre-rebuild-2026-09-02`，两者均已回读。飞书项目群 `Codex｜个人价值投资系统` 已创建、绑定、置顶并回读。
 - `gbrain_closure`：已写入 `projects/investment/personal-value-investing-system-rebuild-20260902`，并更新 `projects/investment/readme`；旧 V1 已建立 `superseded_by` 关系。
-- `verified_at`：2026-09-02（亚洲／上海）；置顶聊天读取、本地测试、Git 提交、GitHub 分支与持续集成、GBrain 页面均已逐项核对。
+- `verified_at`：2026-09-02（亚洲／上海）；置顶聊天读取、本地测试、Git 提交、GitHub 分支与持续集成、GBrain 页面、飞书群绑定和桥重载均已逐项核对。
 
 模式：授权修改与外部仓库交付。  
 目标：建立全新的个人价值投资系统项目，迁入置顶聊天信息，形成可运行基础并覆盖 GitHub 旧项目。  
@@ -38,6 +38,8 @@
 - [x] 创建远端归档分支 `archive/pre-rebuild-2026-09-02`，回读为覆盖前提交 `94a08c33062ec30be612ddf8b3bc7a6e13ae8fac`；仓库已改为新英文名。
 - [x] 初始化新 Git 历史、用带租约方式覆盖并回读默认分支；新主线持续集成通过。
 - [x] 完成 GBrain 写回与回读，并建立旧 V1 到新主线的替代关系。
+- [x] 创建唯一飞书项目群，写入口袋哥持久化绑定，受控重载后核对单实例、连接日志、介绍消息和置顶回执。
+- [ ] 在 Codex Windows 应用中用原生“打开文件夹”登记英文项目入口；当前没有可调用的项目登记接口，且不修改应用内部状态库。
 
 ## 后续路线
 
@@ -69,6 +71,7 @@
 - 自动数据来源、授权、刷新频率和前端形态仍未定；进入阶段 2 前需单独确认。
 - 历史聊天中的行情、财务、估值和回测结果未在本轮重新核验，不能作为当前结论。
 - 旧本地工程含未提交改动，必须原地保留，不得清理。
+- Codex Windows 应用侧栏登记仍需一次原生界面操作；项目路径已确认可由 Windows 访问。
 
 ## 下一步
 
